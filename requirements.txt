@@ -1,0 +1,8 @@
+networkx
+
+pytest
+pytest-cov
+pytest-runner
+pylint
+pycodestyle
+pydocstyle
