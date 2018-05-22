@@ -11,23 +11,26 @@ class Closure(object):
     """
 
     def __init__(self, graph, node_weight='weight', arc_weight=None,
-                 source_node=None, sink_node=None):
+                 in_set=None, not_in_set=None):
         if arc_weight is None:
             arc_weight = 'weight'
             for u, v in graph.edges:
                 graph[u][v]['weight'] = float('inf')
 
-        if source_node is None:
-            self._source_node = 'source'
-            graph.add_node(self._source_node)
-        else:
-            self._source_node = source_node
+        self._source_node = 'source'
+        self._sink_node = 'sink'
+        self._special_nodes = (self._source_node, self._sink_node)
+        graph.add_nodes_from(self._special_nodes)
 
-        if sink_node is None:
-            self._sink_node = 'sink'
-            graph.add_node(self._sink_node)
+        if in_set is None:
+            in_set = {}
         else:
-            self._sink_node = sink_node
+            in_set = set(in_set)
+
+        if not_in_set is None:
+            not_in_set = {}
+        else:
+            not_in_set = set(not_in_set)
 
         if isinstance(node_weight, str):
             constant = node_weight
@@ -39,46 +42,52 @@ class Closure(object):
             for u, v in graph.edges:
                 graph[u][v]['multiplier'] = 0
 
-            for node in graph.nodes:
-                if node not in (self._source_node, self._sink_node):
-                    weight = graph.nodes[node][constant]
+        for node in graph.nodes:
+            if node in self._special_nodes:
+                pass
+            elif node in in_set:
+                graph.add_edge(self._source_node, node,
+                               **{arc_weight: float('inf'),
+                                  'multiplier': 0})
+            elif node in not_in_set:
+                graph.add_edge(node, self._sink_node,
+                               **{arc_weight: float('inf'),
+                                  'multiplier': 0})
+            else:
+                weight = graph.nodes[node][constant]
+                if multiplier:
                     multiplier_weight = graph.nodes[node][multiplier]
-                    graph.add_edge(node, self._sink_node,
-                                   **{arc_weight: weight,
-                                      'multiplier': multiplier_weight})
-                    graph.add_edge(self._source_node, node,
-                                   **{arc_weight: -weight,
-                                      'multiplier': -multiplier_weight})
-        else:
-            for node in graph.nodes:
-                if node not in (self._source_node, self._sink_node):
-                    weight = graph.nodes[node][constant]
-                    if weight > 0:
-                        graph.add_edge(node, self._sink_node,
-                                       **{arc_weight: weight})
-                    elif weight < 0:
-                        graph.add_edge(self._source_node, node,
-                                       **{arc_weight: -weight})
+                else:
+                    multiplier_weight = 0
+                graph.add_edge(node, self._sink_node,
+                               **{arc_weight: weight,
+                                  'multiplier': multiplier_weight})
+                graph.add_edge(self._source_node, node,
+                               **{arc_weight: -weight,
+                                  'multiplier': -multiplier_weight})
 
         self._G = graph
         self._constant = constant
+        self._multiplier = multiplier
         self._arc_weight = arc_weight
 
     def _binary_cut_to_set(self, cut, index):
         return {x for x in self._G if cut[x][index] == 1 and
-                x not in (self._source_node, self._sink_node)}
+                x not in self._special_nodes}
 
     def solve(self):
         _, cuts, _ = hpf(self._G, self._source_node,
-                         self._sink_node, self._arc_weight)
+                         self._sink_node, self._arc_weight,
+                         roundNegativeCapacity=True
+                         )
 
         return self._binary_cut_to_set(cuts, 0)
 
-    def solve_parametric(self, parameter_range):
+    def solve_parametric(self, low, high):
         breakpoints, cuts, _ = hpf(
             self._G, self._source_node,
             self._sink_node, self._arc_weight, mult_cap='multiplier',
-            lambdaRange=parameter_range, roundNegativeCapacity=True)
+            lambdaRange=[low, high], roundNegativeCapacity=True)
 
         cuts = [
             self._binary_cut_to_set(cuts, i) for i in range(len(breakpoints))

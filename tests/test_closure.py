@@ -53,7 +53,7 @@ def test_min_s_excess(S_Excess):
 
 
 def test_min_closure_parametric(C_parametric):
-    sets, breakpoints = C_parametric.solve_parametric([0, 5])
+    sets, breakpoints = C_parametric.solve_parametric(0, 5)
     print(sets, breakpoints)
 
     assert breakpoints == [1.5, 5.0]
