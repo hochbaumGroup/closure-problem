@@ -40,7 +40,7 @@ class Closure(object):
 
         if multiplier:
             for u, v in graph.edges:
-                graph[u][v]['multiplier'] = 0
+                graph[u][v][multiplier] = 0
 
         for node in graph.nodes:
             if node in self._special_nodes:
@@ -86,7 +86,7 @@ class Closure(object):
     def solve_parametric(self, low, high):
         breakpoints, cuts, _ = hpf(
             self._G, self._source_node,
-            self._sink_node, self._arc_weight, mult_cap='multiplier',
+            self._sink_node, self._arc_weight, mult_cap=self._multiplier,
             lambdaRange=[low, high], roundNegativeCapacity=True)
 
         cuts = [
