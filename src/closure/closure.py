@@ -65,16 +65,19 @@ class Closure(object):
         self._arc_weight = arc_weight
 
     def _binary_cut_to_set(self, cut, index):
-        return {x for x in self._G if cut[x][index] == 1 and x not in (self._source_node, 't')}
+        return {x for x in self._G if cut[x][index] == 1 and
+                x not in (self._source_node, self._sink_node)}
 
     def solve(self):
-        _, cuts, _ = hpf(self._G, self._source_node, self._sink_node, self._arc_weight)
+        _, cuts, _ = hpf(self._G, self._source_node,
+                         self._sink_node, self._arc_weight)
 
         return self._binary_cut_to_set(cuts, 0)
 
     def solve_parametric(self, parameter_range):
         breakpoints, cuts, _ = hpf(
-            self._G, self._source_node, self._sink_node, self._arc_weight, mult_cap='multiplier',
+            self._G, self._source_node,
+            self._sink_node, self._arc_weight, mult_cap='multiplier',
             lambdaRange=parameter_range, roundNegativeCapacity=True)
 
         cuts = [
