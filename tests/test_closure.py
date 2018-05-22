@@ -40,21 +40,18 @@ def C_parametric(G):
 
 def test_min_closure(C):
     set = C.solve()
-    print(set)
 
     assert set == {1, 2}
 
 
 def test_min_s_excess(S_Excess):
     set = S_Excess.solve()
-    print(set)
 
     assert set == {1, }
 
 
 def test_min_closure_parametric(C_parametric):
     sets, breakpoints = C_parametric.solve_parametric(0, 5)
-    print(sets, breakpoints)
 
     assert breakpoints == [1, 5.0]
     assert sets[0] == {1, 2}
