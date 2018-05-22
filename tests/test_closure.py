@@ -6,9 +6,9 @@ import networkx as nx
 def G():
     G = nx.DiGraph()
 
-    G.add_node(0, weight=3, multiplier=-2)
+    G.add_node(0, weight=3, multiplier=0)
     G.add_node(1, weight=-6, multiplier=0)
-    G.add_node(2, weight=4, multiplier=0)
+    G.add_node(2, weight=4, multiplier=2)
 
     G.add_edge(0, 1, weight=1)
     G.add_edge(0, 2, weight=1)
@@ -56,6 +56,6 @@ def test_min_closure_parametric(C_parametric):
     sets, breakpoints = C_parametric.solve_parametric(0, 5)
     print(sets, breakpoints)
 
-    assert breakpoints == [1.5, 5.0]
+    assert breakpoints == [1, 5.0]
     assert sets[0] == {1, 2}
-    assert sets[1] == {0, 1, 2}
+    assert sets[1] == set()

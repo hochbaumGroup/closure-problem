@@ -8,6 +8,9 @@ class Closure(object):
     NOTE: Only works correctly when source adjacent arcs have increasing
     parameter weights and sink adjacent arcs have negative parameter weights.
 
+    Assumption: lambda >=0 and weight + multiplier * lambda
+    has the same sign as weight + multiplier.
+
     """
 
     def __init__(self, graph, node_weight='weight', arc_weight=None,
@@ -61,12 +64,15 @@ class Closure(object):
                 else:
                     weight = graph.nodes[node][constant]
                     multiplier_weight = graph.nodes[node][multiplier]
-                    graph.add_edge(node, self._sink_node,
-                                   **{arc_weight: weight,
-                                      self._multiplier: multiplier_weight})
-                    graph.add_edge(self._source_node, node,
-                                   **{arc_weight: -weight,
-                                      self._multiplier: -multiplier_weight})
+                    if weight + multiplier_weight > 0:
+                        graph.add_edge(node, self._sink_node,
+                                       **{arc_weight: weight,
+                                          self._multiplier: multiplier_weight})
+                    elif weight + multiplier_weight < 0:
+                        graph.add_edge(self._source_node, node,
+                                       **{arc_weight: -weight,
+                                          self._multiplier: -multiplier_weight}
+                                       )
         else:
             for node in graph.nodes:
                 if node in self._special_nodes:
@@ -79,10 +85,12 @@ class Closure(object):
                                    **{arc_weight: float('inf')})
                 else:
                     weight = graph.nodes[node][constant]
-                    graph.add_edge(node, self._sink_node,
-                                   **{arc_weight: weight})
-                    graph.add_edge(self._source_node, node,
-                                   **{arc_weight: -weight})
+                    if weight > 0:
+                        graph.add_edge(node, self._sink_node,
+                                       **{arc_weight: weight})
+                    elif weight < 0:
+                        graph.add_edge(self._source_node, node,
+                                       **{arc_weight: -weight})
 
     def _binary_cut_to_set(self, cut, index):
         return {x for x in self._G if cut[x][index] == 1 and
@@ -100,7 +108,7 @@ class Closure(object):
         breakpoints, cuts, _ = hpf(
             self._G, self._source_node,
             self._sink_node, self._arc_weight, mult_cap=self._multiplier,
-            lambdaRange=[low, high], roundNegativeCapacity=True)
+            lambdaRange=[low, high], roundNegativeCapacity=False)
 
         cuts = [
             self._binary_cut_to_set(cuts, i) for i in range(len(breakpoints))
