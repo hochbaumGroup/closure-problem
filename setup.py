@@ -24,6 +24,7 @@ setup(
     author_email="qspaen@berkeley.edu",
     license="Non-commercial license. Not an open-source license.",
     long_description=readme,
+    long_description_content_type="text/markdown",
     packages=find_packages("src"),
     package_dir={"": "src"},
     install_requires=["networkx", "pseudoflow"],  # required packages here
