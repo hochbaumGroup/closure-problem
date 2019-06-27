@@ -6,21 +6,20 @@ with open("README.md") as f:
 
 setup(
     name="closure-problem",
-    version="0.1dev",
+    version="2019.6.1",
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.5",
     ],
     description=None,
     keywords=[
-        "Closure problems",
+        "Closure problem",
         "Hochbaum's Normalized Cut",
         "HNC",
         "S-excess problem",
-        "Parametric problems",
+        "Parametric cut problem",
     ],
-    url="",
+    url="https://github.com/hochbaumGroup/closure-problem",
     author="Quico Spaen",
     author_email="qspaen@berkeley.edu",
     license="Non-commercial license. Not an open-source license.",
