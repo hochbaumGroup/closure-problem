@@ -9,7 +9,7 @@ setup(
     version="2019.6.1",
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3",
     ],
     description=None,
     keywords=[
