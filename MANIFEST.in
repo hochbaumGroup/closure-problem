@@ -1,1 +1,6 @@
 graft src
+graft tests
+include LICENSE.md
+include README.md
+include setup.cfg
+include setup.py
