@@ -27,5 +27,5 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["networkx", "pseudoflow"],  # required packages here
+    install_requires=["networkx", "pseudoflow>=2020.5.1"],  # required packages here
 )
