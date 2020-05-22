@@ -1,5 +1,7 @@
 import pytest
 
+from closure.hnc import HNC
+
 
 @pytest.fixture
 def G():
@@ -34,3 +36,10 @@ def test_HNC_parametric(HNC):
     assert breakpoints == [0.25, 5.0]
     assert sets[0] == {0, 1}
     assert sets[1] == {0, 1, 2}
+
+
+def test_HNC_input_graph_should_not_change(G):
+    assert HNC(G, [0, 1], [3, ]).solve(0.0) == {0, 1}
+
+    assert 'degree' not in G.nodes[0]
+    assert G.number_of_nodes() == 4
