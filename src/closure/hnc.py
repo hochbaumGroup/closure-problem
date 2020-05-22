@@ -1,3 +1,4 @@
+import copy
 from closure.closure import Closure
 
 
@@ -9,8 +10,13 @@ class HNC(object):
         negative_seeds,
         arc_weight="weight",
         node_label="degree",
+        copy_graph=True
     ):
-        self._G = G
+        if copy_graph:
+            self._G = copy.deepcopy(G)
+        else:
+            self._G = G
+
         self._arc_weight = arc_weight
         self._node_label_parametric = node_label
         self._node_label = "constant"
@@ -26,6 +32,7 @@ class HNC(object):
             arc_weight=self._arc_weight,
             in_set=self._positive_seeds,
             not_in_set=self._negative_seeds,
+            copy_graph=False
         )
 
     def _add_node_weights(self):

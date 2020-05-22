@@ -20,7 +20,7 @@ class Closure(object):
         if copy_graph:
             self._G = copy.deepcopy(graph)
         else:
-            self._G = self.graph
+            self._G = graph
 
         if arc_weight is None:
             arc_weight = "weight"
