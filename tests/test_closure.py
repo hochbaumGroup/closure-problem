@@ -64,4 +64,7 @@ def test_min_closure_input_graph_should_not_change():
     assert G[0][2]['weight'] == 1
     assert G[1][2]['weight'] == 1
 
+    assert Closure(G).solve() == {1, 2}
+
+
 
