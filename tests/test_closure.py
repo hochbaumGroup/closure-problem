@@ -42,3 +42,26 @@ def test_min_closure_parametric():
     assert breakpoints == [2, 3.0]
     assert sets[0] == set()
     assert sets[1] == {1, 2}
+
+def test_min_closure_twice():
+    G = nx.DiGraph()
+    G.add_node(0, weight=3)
+    G.add_node(1, weight=-6)
+    G.add_node(2, weight=4)
+    G.add_edge(0, 1, weight=1)
+    G.add_edge(0, 2, weight=1)
+    G.add_edge(1, 2, weight=1)
+
+    assert Closure(G).solve() == {1, 2}
+
+    # check that G doesn't change.
+    assert G.number_of_nodes() == 3
+    assert G.number_of_edges() == 3
+    assert G.nodes[0]['weight'] == 3
+    assert G.nodes[1]['weight'] == -6
+    assert G.nodes[2]['weight'] == 4
+    assert G[0][1]['weight'] == 1
+    assert G[0][2]['weight'] == 1
+    assert G[1][2]['weight'] == 1
+
+
