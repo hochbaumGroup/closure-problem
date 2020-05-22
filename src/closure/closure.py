@@ -1,3 +1,4 @@
+import copy
 import networkx as nx
 from pseudoflow import hpf
 
@@ -14,20 +15,24 @@ class Closure(object):
     """
 
     def __init__(
-        self, graph, node_weight="weight", arc_weight=None, in_set=None, not_in_set=None
+        self, graph, node_weight="weight", arc_weight=None, in_set=None, not_in_set=None, copy_graph=True
     ):
+        if copy_graph:
+            self._G = copy.deepcopy(graph)
+        else:
+            self._G = self.graph
+
         if arc_weight is None:
             arc_weight = "weight"
-            for u, v in graph.edges:
-                graph[u][v]["weight"] = float("inf")
-
+            for u, v in self._G.edges:
+                self._G[u][v]["weight"] = float("inf")
         self._source_node = "source"
         self._sink_node = "sink"
         self._special_nodes = (self._source_node, self._sink_node)
-        self._G = graph
+
         self._arc_weight = arc_weight
 
-        graph.add_nodes_from(self._special_nodes)
+        self._G.add_nodes_from(self._special_nodes)
 
         if in_set is None:
             in_set = {}
@@ -48,35 +53,35 @@ class Closure(object):
         self._multiplier = multiplier
 
         if multiplier:
-            for u, v in graph.edges:
-                graph[u][v][multiplier] = 0
+            for u, v in self._G.edges:
+                self._G[u][v][multiplier] = 0
 
-            for node in graph.nodes:
+            for node in self._G.nodes:
                 if node in self._special_nodes:
                     pass
                 elif node in in_set:
-                    graph.add_edge(
+                    self._G.add_edge(
                         self._source_node,
                         node,
                         **{arc_weight: float("inf"), self._multiplier: 0}
                     )
                 elif node in not_in_set:
-                    graph.add_edge(
+                    self._G.add_edge(
                         node,
                         self._sink_node,
                         **{arc_weight: float("inf"), self._multiplier: 0}
                     )
                 else:
-                    weight = graph.nodes[node][constant]
-                    multiplier_weight = graph.nodes[node][multiplier]
+                    weight = self._G.nodes[node][constant]
+                    multiplier_weight = self._G.nodes[node][multiplier]
                     if weight + multiplier_weight > 0:
-                        graph.add_edge(
+                        self._G.add_edge(
                             node,
                             self._sink_node,
                             **{arc_weight: weight, self._multiplier: multiplier_weight}
                         )
                     elif weight + multiplier_weight < 0:
-                        graph.add_edge(
+                        self._G.add_edge(
                             self._source_node,
                             node,
                             **{
@@ -85,21 +90,21 @@ class Closure(object):
                             }
                         )
         else:
-            for node in graph.nodes:
+            for node in self._G.nodes:
                 if node in self._special_nodes:
                     pass
                 elif node in in_set:
-                    graph.add_edge(
+                    self._G.add_edge(
                         self._source_node, node, **{arc_weight: float("inf")}
                     )
                 elif node in not_in_set:
-                    graph.add_edge(node, self._sink_node, **{arc_weight: float("inf")})
+                    self._G.add_edge(node, self._sink_node, **{arc_weight: float("inf")})
                 else:
-                    weight = graph.nodes[node][constant]
+                    weight = self._G.nodes[node][constant]
                     if weight > 0:
-                        graph.add_edge(node, self._sink_node, **{arc_weight: weight})
+                        self._G.add_edge(node, self._sink_node, **{arc_weight: weight})
                     elif weight < 0:
-                        graph.add_edge(self._source_node, node, **{arc_weight: -weight})
+                        self._G.add_edge(self._source_node, node, **{arc_weight: -weight})
 
     def _binary_cut_to_set(self, cut, index):
         return {
