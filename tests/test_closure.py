@@ -43,7 +43,7 @@ def test_min_closure_parametric():
     assert sets[0] == set()
     assert sets[1] == {1, 2}
 
-def test_min_closure_twice():
+def test_min_closure_input_graph_should_not_change():
     G = nx.DiGraph()
     G.add_node(0, weight=3)
     G.add_node(1, weight=-6)
