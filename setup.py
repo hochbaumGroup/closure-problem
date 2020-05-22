@@ -6,7 +6,7 @@ with open("README.md") as f:
 
 setup(
     name="closure-problem",
-    version="2020.5.1",
+    version="2020.5.2",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",
